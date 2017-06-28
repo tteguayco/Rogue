@@ -71,10 +71,16 @@ void Dungeon::generateMapRandomly()
 
 void Dungeon::SetDoorsAndCorridors() {
     const int roomOneBottomDoorColumn = getRandomBetween(
-      rooms_[0].getLeftLimit() + 1, rooms_[0].getRightLimit() - 1);
+        rooms_[0].getLeftLimit() + 1, rooms_[0].getRightLimit() - 1);
 
     const int roomOneRightDoorRow = getRandomBetween(
-      rooms_[0].getTopLimit() + 1, rooms_[0].getBottomLimit() - 1);
+        rooms_[0].getTopLimit() + 1, rooms_[0].getBottomLimit() - 1);
+
+    const int roomTwoBottomDoorColumn = getRandomBetween(
+        rooms_[1].getLeftLimit() + 1, rooms_[1].getRightLimit() - 1);
+
+    const int roomThreeRightDoorRow = getRandomBetween(
+        rooms_[2].getTopLimit() + 1, rooms_[2].getBottomLimit() - 1);
 
     // Rooms 1-3
     int firstCorridorTopIndex = rooms_[0].getBottomLimit();
@@ -95,7 +101,16 @@ void Dungeon::SetDoorsAndCorridors() {
     }
 
     // Rooms 2-3
-    
+    int thirdCorridorLeftSideIndex = rooms_[2].getRightLimit();
+    int thridCorridorRightSideIndex = rooms_[1].getBottomLimit();
+    mapElements_[roomThreeRightDoorRow][thirdCorridorLeftSideIndex] = Door;
+    mapElements_[thridCorridorRightSideIndex][roomTwoBottomDoorColumn] = Door;
+    for (int i = thridCorridorRightSideIndex + 1; i <= roomThreeRightDoorRow; i++) {
+        mapElements_[i][roomTwoBottomDoorColumn] = Corridor;
+    }
+    for (int i = thirdCorridorLeftSideIndex + 1; i < roomTwoBottomDoorColumn; i++) {
+        mapElements_[roomThreeRightDoorRow][i] = Corridor;
+    }
 }
 
 void Dungeon::buildRoom(Room room)
