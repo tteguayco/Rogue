@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 
 const unsigned NUMBER_OF_ROOMS = 3;
 const unsigned NUMBER_OF_MONSTERS_BY_ROOM = 3;
@@ -57,10 +58,12 @@ private:
 public:
     Dungeon(int nrows, int ncols);
     ~Dungeon();
-    void generateRandomly(void);
+    void generateMapRandomly(void);
     void print(void);
     void readFromFile(char* fileName);
 
 private:
     void initializeMap(void);
+    void buildRoom(int topLimit,
+      int bottomLimit, int leftLimit, int rightLimit);
 };

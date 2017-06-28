@@ -4,9 +4,9 @@
 
 int main(void)
 {
-  Dungeon dungeon(20, 30);
+  Dungeon dungeon(40, 40);
+  dungeon.generateMapRandomly();
   dungeon.print();
 
-  std::cout << "Ok. Program running..." << std::endl;
   return 0;
 }
