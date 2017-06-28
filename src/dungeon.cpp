@@ -13,11 +13,11 @@ void Dungeon::initializeRooms()
     const int roomOneRightLimit = numberOfCols_ / 2;
 
     Room roomOne(roomOneTopLimit, roomOneBottomLimit,
-      roomOneLeftLimit, roomOneRightLimit);
+        roomOneLeftLimit, roomOneRightLimit);
     Room roomTwo(roomOneTopLimit, roomOneBottomLimit,
-      roomOneRightLimit + ROOM_CELL_MARGIN, numberOfCols_ - 1);
+        roomOneRightLimit + ROOM_CELL_MARGIN, numberOfCols_ - 1);
     Room roomThree(roomOneBottomLimit + ROOM_CELL_MARGIN, numberOfRows_ - 1,
-      roomOneTopLimit, roomOneRightLimit);
+        roomOneTopLimit, roomOneRightLimit);
 
     // Store objects Room
     rooms_.push_back(roomOne);
@@ -29,11 +29,11 @@ void Dungeon::initializeMap()
 {
     mapElements_ = new Cell*[numberOfRows_];
     for (unsigned i = 0; i < numberOfRows_; i++) {
-      mapElements_[i] = new Cell[numberOfCols_];
+        mapElements_[i] = new Cell[numberOfCols_];
 
-      for (unsigned j = 0; j < numberOfCols_; j++) {
-        mapElements_[i][j] = Disabled;
-      }
+        for (unsigned j = 0; j < numberOfCols_; j++) {
+          mapElements_[i][j] = Disabled;
+        }
     }
 }
 
@@ -61,15 +61,16 @@ void Dungeon::generateMapRandomly()
 {
     // Build all of the rooms
     for (std::vector<Room>::iterator roomIterator = rooms_.begin();
-      roomIterator != rooms_.end();
-      ++roomIterator) {
+        roomIterator != rooms_.end();
+        ++roomIterator) {
         buildRoom(*roomIterator);
     }
 
-    SetDoorsAndCorridors();
+    setDoorsAndCorridors();
+    setMonsters();
 }
 
-void Dungeon::SetDoorsAndCorridors() {
+void Dungeon::setDoorsAndCorridors() {
     const int roomOneBottomDoorColumn = getRandomBetween(
         rooms_[0].getLeftLimit() + 1, rooms_[0].getRightLimit() - 1);
 
@@ -113,35 +114,62 @@ void Dungeon::SetDoorsAndCorridors() {
     }
 }
 
+void Dungeon::setMonsters()
+{
+    int monsterRandomRow;
+    int monsterRandomCol;
+    bool cellAvailable = false;
+
+    for (unsigned i = 0; i < rooms_.size(); i++) {
+        for (unsigned k = 0; k < NUMBER_OF_MONSTERS_BY_ROOM; k++) {
+            while (!cellAvailable) {
+                monsterRandomRow = getRandomBetween(
+                    rooms_[i].getTopLimit() + 1, rooms_[i].getBottomLimit() - 1);
+                monsterRandomCol = getRandomBetween(
+                    rooms_[i].getLeftLimit() + 1, rooms_[i].getRightLimit() - 1);
+
+                if (mapElements_[monsterRandomRow][monsterRandomCol] != Enabled) {
+                    cellAvailable = false;
+                } else {
+                    // Set the monster on an available cell
+                    //mapElements_[monsterRandomRow][monsterRandomCol] = Monster;
+                    cellAvailable = true;
+                }
+            }
+
+        }
+    }
+}
+
 void Dungeon::buildRoom(Room room)
 {
-  for (unsigned i = room.getTopLimit(); i <= room.getBottomLimit(); i++) {
-      for (unsigned j = room.getLeftLimit(); j <= room.getRightLimit(); j++) {
-          // Top wall
-          if (i == room.getTopLimit()) {
-              mapElements_[i][j] = Wall;
-          }
+    for (unsigned i = room.getTopLimit(); i <= room.getBottomLimit(); i++) {
+        for (unsigned j = room.getLeftLimit(); j <= room.getRightLimit(); j++) {
+            // Top wall
+            if (i == room.getTopLimit()) {
+                mapElements_[i][j] = Wall;
+            }
 
-          // Left wall
-          else if (j == room.getLeftLimit()) {
-              mapElements_[i][j] = Wall;
-          }
+            // Left wall
+            else if (j == room.getLeftLimit()) {
+                mapElements_[i][j] = Wall;
+            }
 
-          // Bottom wall
-          else if (i == room.getBottomLimit()) {
-              mapElements_[i][j] = Wall;
-          }
+            // Bottom wall
+            else if (i == room.getBottomLimit()) {
+                mapElements_[i][j] = Wall;
+            }
 
-          // Right wall
-          else if (j == room.getRightLimit()) {
-              mapElements_[i][j] = Wall;
-          }
+            // Right wall
+            else if (j == room.getRightLimit()) {
+                mapElements_[i][j] = Wall;
+            }
 
-          else {
-              mapElements_[i][j] = Enabled;
-          }
-      }
-  }
+            else {
+                mapElements_[i][j] = Enabled;
+            }
+        }
+    }
 }
 
 void Dungeon::print()
@@ -154,9 +182,9 @@ void Dungeon::print()
                 case Door:        std::cout << DOOR_CHAR;           break;
                 case Corridor:    std::cout << CORRIDOR_CHAR;       break;
                 case AccessPoint: std::cout << ACCESS_POINT_CHAR;   break;
-                case Hero:        std::cout << HERO_CHAR;           break;
+                //case Hero:        std::cout << HERO_CHAR;           break;
                 case Amulet:      std::cout << AMULET_CHAR;         break;
-                case Monster:     std::cout << MONSTER_CHAR;        break;
+                //case Monster:     std::cout << MONSTER_CHAR;        break;
                 case Enabled:     std::cout << DISABLED_CHAR;       break;
             }
         }
