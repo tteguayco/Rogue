@@ -4,7 +4,7 @@
 
 int main(void)
 {
-  Dungeon dungeon(40, 40);
+  Dungeon dungeon(20, 30);
   dungeon.generateMapRandomly();
   dungeon.print();
 
