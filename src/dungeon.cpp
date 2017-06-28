@@ -67,7 +67,9 @@ void Dungeon::generateMapRandomly()
     }
 
     setDoorsAndCorridors();
-    setMonsters();
+    setAccessPoint();
+    setAmulet();
+    //setMonsters();
 }
 
 void Dungeon::setDoorsAndCorridors() {
@@ -114,6 +116,26 @@ void Dungeon::setDoorsAndCorridors() {
     }
 }
 
+void Dungeon::setAccessPoint()
+{
+    const int randomRow = getRandomBetween(rooms_[0].getTopLimit() + 1,
+        rooms_[0].getBottomLimit() - 1);
+    const int randomCol = getRandomBetween(rooms_[0].getLeftLimit() + 1,
+        rooms_[0].getRightLimit() - 1);
+    mapElements_[randomRow][randomCol] = AccessPoint;
+
+    // TODO make accesspoint as the initialposition for the hero
+}
+
+void Dungeon::setAmulet()
+{
+    const int randomRow = getRandomBetween(rooms_[2].getTopLimit() + 1,
+        rooms_[2].getBottomLimit() - 1);
+    const int randomCol = getRandomBetween(rooms_[2].getLeftLimit() + 1,
+        rooms_[2].getRightLimit() - 1);
+    mapElements_[randomRow][randomCol] = Amulet;
+}
+
 void Dungeon::setMonsters()
 {
     int monsterRandomRow;
@@ -132,11 +154,13 @@ void Dungeon::setMonsters()
                     cellAvailable = false;
                 } else {
                     // Set the monster on an available cell
-                    //mapElements_[monsterRandomRow][monsterRandomCol] = Monster;
+                    //Monster newMonster(monsterRandomRow, monsterRandomCol);
+                    //monsters_.push_back(newMonster);
+                    mapElements_[monsterRandomRow][monsterRandomCol] = Monster;
                     cellAvailable = true;
                 }
             }
-
+            cellAvailable = false;
         }
     }
 }
@@ -182,9 +206,9 @@ void Dungeon::print()
                 case Door:        std::cout << DOOR_CHAR;           break;
                 case Corridor:    std::cout << CORRIDOR_CHAR;       break;
                 case AccessPoint: std::cout << ACCESS_POINT_CHAR;   break;
-                //case Hero:        std::cout << HERO_CHAR;           break;
+                case Hero:        std::cout << HERO_CHAR;           break;
                 case Amulet:      std::cout << AMULET_CHAR;         break;
-                //case Monster:     std::cout << MONSTER_CHAR;        break;
+                case Monster:     std::cout << MONSTER_CHAR;        break;
                 case Enabled:     std::cout << DISABLED_CHAR;       break;
             }
         }
