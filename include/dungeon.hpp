@@ -1,4 +1,4 @@
-#include <vector>
+#include <iostream>
 
 const unsigned NUMBER_OF_ROOMS = 3;
 const unsigned NUMBER_OF_MONSTERS_BY_ROOM = 3;
@@ -10,14 +10,20 @@ const char WALL_CHAR = '*';
 const char DOOR_CHAR = '+';
 const char CORRIDOR_CHAR = '#';
 const char ACCESS_POINT_CHAR = 'X';
+const char HERO_CHAR = '@';
 const char AMULET_CHAR = '&';
 const char MONSTER_CHAR = 'O';
+const char DISABLED_CHAR = ' ';
 
 /*
  * Between a pair of rooms, there will be ROOM_CELL_MARGIN
  * cells of separation.
  */
 const unsigned ROOM_CELL_MARGIN = 2;
+
+enum Cell {
+    Disabled, Wall, Door, Corridor, AccessPoint, Amulet, Hero, Monster
+};
 
 class Dungeon {
 private:
@@ -46,10 +52,9 @@ private:
      * There will be a method which will print all of these
      * characters in the screen in order to visualize the map.
      */
-    char** mapElements_;
+    Cell** mapElements_;
 
 public:
-    Dungeon();
     Dungeon(int nrows, int ncols);
     ~Dungeon();
     void generateRandomly(void);
