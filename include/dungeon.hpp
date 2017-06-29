@@ -27,7 +27,8 @@ const char DISABLED_CHAR = ' ';
 const unsigned ROOM_CELL_MARGIN = 4;
 
 enum Cell {
-    Disabled, Enabled, Wall, Door, Corridor, AccessPoint, Amulet
+    Disabled, Enabled, Wall, Door, Corridor, AccessPoint, Amulet, HeroCell,
+    MonsterCell
 };
 
 class Dungeon {
@@ -60,6 +61,7 @@ private:
      * characters in the screen in order to visualize the map.
      */
     Cell** mapElements_;
+    Cell heroLastCell_;
 
 public:
     Dungeon(int nrows, int ncols);
@@ -67,6 +69,8 @@ public:
     void generateMapRandomly(void);
     void print(void);
     void readFromFile(char* fileName);
+    void moveHeroToCell(unsigned newRow, unsigned newCol);
+    Hero* getHero(void);
 
 private:
     void initializeRooms();

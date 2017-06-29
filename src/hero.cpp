@@ -4,7 +4,8 @@ Hero::Hero(unsigned initialRow, unsigned initialCol):
     currentRow_(initialRow),
     currentCol_(initialCol),
     numOfLives_(DEFAULT_NUMBER_OF_LIVES),
-    hasAmulet_(false)
+    hasAmulet_(false),
+    hasWon_(false)
 {}
 
 Hero::~Hero()
@@ -34,7 +35,7 @@ void Hero::takeAmulet()
 {
     hasAmulet_ = true;
 }
-/*
+
 void Hero::setRow(unsigned newRow)
 {
     currentRow_ = newRow;
@@ -44,7 +45,17 @@ void Hero::setCol(unsigned newCol)
 {
     currentCol_ = newCol;
 }
-*/
+
+bool Hero::hasWon()
+{
+    return hasWon_;
+}
+
+void Hero::markAsWinner()
+{
+    hasWon_ = true;
+}
+
 void Hero::decreaseLife()
 {
     if (!isDead()) {
@@ -59,6 +70,11 @@ bool Hero::isDead(void)
     } else {
         return false;
     }
+}
+
+unsigned Hero::getNumberOfLives()
+{
+    return numOfLives_;
 }
 
 void Hero::moveUp()

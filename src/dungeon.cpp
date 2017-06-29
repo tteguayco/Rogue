@@ -42,7 +42,8 @@ Dungeon::Dungeon(int nrows, int ncols):
     accessPointRow_(0),
     accessPointCol_(0),
     amuletRow_(0),
-    amuletCol_(0)
+    amuletCol_(0),
+    heroLastCell_(AccessPoint)
 {
     initializeMap();
     initializeRooms();
@@ -121,10 +122,9 @@ void Dungeon::setAccessPoint()
         rooms_[0].getBottomLimit() - 1);
     const int randomCol = getRandomBetween(rooms_[0].getLeftLimit() + 1,
         rooms_[0].getRightLimit() - 1);
-    mapElements_[randomRow][randomCol] = AccessPoint;
 
     hero_ = new Hero(randomRow, randomCol);
-    // TODO make accesspoint as the initialposition for the hero
+    mapElements_[randomRow][randomCol] = AccessPoint;
 }
 
 void Dungeon::setAmulet()
@@ -156,6 +156,7 @@ void Dungeon::setMonsters()
                     // Set the monster on an available cell
                     Monster newMonster(monsterRandomRow, monsterRandomCol);
                     monsters_.push_back(newMonster);
+                    mapElements_[monsterRandomRow][monsterRandomCol] = MonsterCell;
                     cellAvailable = true;
                 }
             }
@@ -172,26 +173,68 @@ void Dungeon::buildRoom(Room room)
             if (i == room.getTopLimit()) {
                 mapElements_[i][j] = Wall;
             }
-
             // Left wall
             else if (j == room.getLeftLimit()) {
                 mapElements_[i][j] = Wall;
             }
-
             // Bottom wall
             else if (i == room.getBottomLimit()) {
                 mapElements_[i][j] = Wall;
             }
-
             // Right wall
             else if (j == room.getRightLimit()) {
                 mapElements_[i][j] = Wall;
             }
-
             else {
                 mapElements_[i][j] = Enabled;
             }
         }
+    }
+}
+
+Hero* Dungeon::getHero()
+{
+    return hero_;
+}
+
+void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
+{
+    // Get current position of the hero
+    const int heroRow = hero_->getRow();
+    const int heroCol = hero_->getCol();
+
+    // Allowed new position?
+    if (mapElements_[newRow][newCol] == Enabled
+      || mapElements_[newRow][newCol] == Door
+      || mapElements_[newRow][newCol] == Corridor
+      || mapElements_[newRow][newCol] == Amulet
+      || mapElements_[newRow][newCol] == AccessPoint) {
+
+          // Unmark current position of the hero
+          mapElements_[heroRow][heroCol] = heroLastCell_;
+
+          // Amulet?
+          if (mapElements_[heroRow][heroCol] == Amulet) {
+              mapElements_[heroRow][heroCol] = Enabled;
+              // We got the amulet!
+              hero_->takeAmulet();
+          }
+
+          // Access point with amulet?
+          else if (mapElements_[heroRow][heroCol] == AccessPoint
+              && hero_->hasAmulet()) {
+              hero_->markAsWinner();
+          }
+
+          // Move hero
+          hero_->setRow(newRow);
+          hero_->setCol(newCol);
+
+          // Store last cell state
+          heroLastCell_ = mapElements_[newRow][newCol];
+
+          // Update map state
+          mapElements_[newRow][newCol] = HeroCell;
     }
 }
 
@@ -205,9 +248,9 @@ void Dungeon::print()
                 case Door:        std::cout << DOOR_CHAR;           break;
                 case Corridor:    std::cout << CORRIDOR_CHAR;       break;
                 case AccessPoint: std::cout << ACCESS_POINT_CHAR;   break;
-                //case Hero:        std::cout << HERO_CHAR;           break;
+                case HeroCell:    std::cout << HERO_CHAR;           break;
                 case Amulet:      std::cout << AMULET_CHAR;         break;
-                //case Monster:     std::cout << MONSTER_CHAR;        break;
+                case MonsterCell: std::cout << MONSTER_CHAR;        break;
                 case Enabled:     std::cout << DISABLED_CHAR;       break;
             }
         }
