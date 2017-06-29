@@ -1,7 +1,6 @@
 #include "dungeon.hpp"
 
 int getRandomBetween(int leftLimit, int rightLimit) {
-    srand(time(NULL));
     return rand() % (rightLimit - leftLimit + 1) + leftLimit;
 }
 
@@ -124,6 +123,7 @@ void Dungeon::setAccessPoint()
         rooms_[0].getRightLimit() - 1);
     mapElements_[randomRow][randomCol] = AccessPoint;
 
+    hero_ = new Hero(randomRow, randomCol);
     // TODO make accesspoint as the initialposition for the hero
 }
 
@@ -154,9 +154,8 @@ void Dungeon::setMonsters()
                     cellAvailable = false;
                 } else {
                     // Set the monster on an available cell
-                    //Monster newMonster(monsterRandomRow, monsterRandomCol);
-                    //monsters_.push_back(newMonster);
-                    mapElements_[monsterRandomRow][monsterRandomCol] = Monster;
+                    Monster newMonster(monsterRandomRow, monsterRandomCol);
+                    monsters_.push_back(newMonster);
                     cellAvailable = true;
                 }
             }
@@ -206,9 +205,9 @@ void Dungeon::print()
                 case Door:        std::cout << DOOR_CHAR;           break;
                 case Corridor:    std::cout << CORRIDOR_CHAR;       break;
                 case AccessPoint: std::cout << ACCESS_POINT_CHAR;   break;
-                case Hero:        std::cout << HERO_CHAR;           break;
+                //case Hero:        std::cout << HERO_CHAR;           break;
                 case Amulet:      std::cout << AMULET_CHAR;         break;
-                case Monster:     std::cout << MONSTER_CHAR;        break;
+                //case Monster:     std::cout << MONSTER_CHAR;        break;
                 case Enabled:     std::cout << DISABLED_CHAR;       break;
             }
         }

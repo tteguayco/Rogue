@@ -9,7 +9,16 @@ private:
     bool     hasAmulet_;      // True if the hero has already got the amulet
 
 public:
-    Hero();
+    Hero(unsigned initialRow, unsigned initialCol);
     ~Hero();
-
+    unsigned getRow();
+    unsigned getCol();
+    /*void setRow(unsigned aRow);
+    void setCol(unsigned aCol);*/
+    void decreaseLife(void);
+    bool isDead(void);
+    void moveUp(void);
+    void moveDown(void);
+    void moveToLeft(void);
+    void moveToRight(void);
 };

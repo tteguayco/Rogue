@@ -27,17 +27,17 @@ const char DISABLED_CHAR = ' ';
 const unsigned ROOM_CELL_MARGIN = 4;
 
 enum Cell {
-    Disabled, Enabled, Wall, Door, Corridor, AccessPoint, Amulet, Hero, Monster
+    Disabled, Enabled, Wall, Door, Corridor, AccessPoint, Amulet
 };
 
 class Dungeon {
 private:
     unsigned numberOfRows_;         // Number of rows of the map
     unsigned numberOfCols_;         // Number of columns of the map
-    // Monster monsters_[NUMBER_OF_ROOMS * NUMBER_OF_MONSTERS_BY_ROOM];
-    // Hero* hero;
+
+    Hero* hero_;
     std::vector<Room> rooms_;
-    //std::vector<Monster> monsters_;
+    std::vector<Monster> monsters_;
 
     /*
      * Access point: it is the start/end point in the Dungeon.
@@ -75,5 +75,6 @@ private:
     void setAccessPoint(void);
     void setAmulet(void);
     void setMonsters(void);
+    void moveMonstersToRandomPosition(void);
     void buildRoom(Room room);
 };
