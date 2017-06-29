@@ -69,7 +69,7 @@ void Dungeon::generateMapRandomly()
     setDoorsAndCorridors();
     setAccessPoint();
     setAmulet();
-    //setMonsters();
+    setMonsters();
 }
 
 void Dungeon::setDoorsAndCorridors() {
@@ -165,6 +165,41 @@ void Dungeon::setMonsters()
     }
 }
 
+void Dungeon::moveMonstersToRandomPosition()
+{
+    const int numOfPossibleDirections = 4;
+    enum PossibleDirection { Up, Down, Left, Right };
+    PossibleDirection directionValues[numOfPossibleDirections] =
+        { Up, Down, Left, Right };
+    int randomDirectionIndex;
+    int newRandomRow;
+    int newRandomCol;
+
+    for (unsigned int i = 0; i < monsters_.size(); i++) {
+        randomDirectionIndex = getRandomBetween(0, numOfPossibleDirections - 1);
+        newRandomRow = monsters_[i].getRow();
+        newRandomCol = monsters_[i].getCol();
+
+        switch (directionValues[randomDirectionIndex]) {
+          case Up:    newRandomRow--; break;
+          case Down:  newRandomRow++; break;
+          case Left:  newRandomCol--; break;
+          case Right: newRandomCol++; break;
+        }
+
+        // Allowed new position for the monster?
+        if (mapElements_[newRandomRow][newRandomCol] == Enabled) {
+            // Set last position as enabled
+            mapElements_[monsters_[i].getRow()][monsters_[i].getCol()] = Enabled;
+
+            // Move monster
+            monsters_[i].setRow(newRandomRow);
+            monsters_[i].setCol(newRandomCol);
+            mapElements_[newRandomRow][newRandomCol] = MonsterCell;
+        }
+    }
+}
+
 void Dungeon::buildRoom(Room room)
 {
     for (unsigned i = room.getTopLimit(); i <= room.getBottomLimit(); i++) {
@@ -208,7 +243,8 @@ void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
       || mapElements_[newRow][newCol] == Door
       || mapElements_[newRow][newCol] == Corridor
       || mapElements_[newRow][newCol] == Amulet
-      || mapElements_[newRow][newCol] == AccessPoint) {
+      || mapElements_[newRow][newCol] == AccessPoint
+      || mapElements_[newRow][newCol] == MonsterCell) {
 
           // Unmark current position of the hero
           mapElements_[heroRow][heroCol] = heroLastCell_;
@@ -226,6 +262,11 @@ void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
               hero_->markAsWinner();
           }
 
+          // Monster? D:
+          else if (mapElements_[heroRow][heroCol] == MonsterCell) {
+              hero_->decreaseLife();
+          }
+
           // Move hero
           hero_->setRow(newRow);
           hero_->setCol(newCol);
@@ -234,7 +275,9 @@ void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
           heroLastCell_ = mapElements_[newRow][newCol];
 
           // Update map state
-          mapElements_[newRow][newCol] = HeroCell;
+          if (mapElements_[newRow][newCol] != MonsterCell) {
+              mapElements_[newRow][newCol] = HeroCell;
+          }
     }
 }
 

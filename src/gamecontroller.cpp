@@ -49,16 +49,20 @@ void GameController::moveHeroToRight()
 
 void GameController::runGame()
 {
-    dungeon_->generateMapRandomly();
-    //dungeon_->print();
-
     char keyPressed;
+
+    dungeon_->generateMapRandomly();
     while (true) {
 
-        system("cls");
+        std::system("clear");
         dungeon_->print();
 
-        if (dungeon_->getHero()->hasWon()) {
+        if (dungeon_->getHero()->isDead()) {
+            std::cout << "You have been eaten by a monster! Try again..."
+                << std::endl;
+            break;
+        }
+        else if (dungeon_->getHero()->hasWon()) {
             std::cout << "\nWell done! You have won." << std::endl;
             break;
         }
@@ -77,5 +81,6 @@ void GameController::runGame()
             case 'k': moveHeroDown();     break;
             case 'l': moveHeroToRight();  break;
         }
+        dungeon_->moveMonstersToRandomPosition();
     }
 }

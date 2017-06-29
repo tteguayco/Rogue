@@ -71,6 +71,7 @@ public:
     void readFromFile(char* fileName);
     void moveHeroToCell(unsigned newRow, unsigned newCol);
     Hero* getHero(void);
+    void moveMonstersToRandomPosition(void);
 
 private:
     void initializeRooms();
@@ -79,6 +80,5 @@ private:
     void setAccessPoint(void);
     void setAmulet(void);
     void setMonsters(void);
-    void moveMonstersToRandomPosition(void);
     void buildRoom(Room room);
 };
