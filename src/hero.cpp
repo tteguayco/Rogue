@@ -24,6 +24,16 @@ unsigned Hero::getCol()
 {
     return currentCol_;
 }
+
+bool Hero::hasAmulet()
+{
+    return hasAmulet_;
+}
+
+void Hero::takeAmulet()
+{
+    hasAmulet_ = true;
+}
 /*
 void Hero::setRow(unsigned newRow)
 {

@@ -13,6 +13,8 @@ public:
     ~Hero();
     unsigned getRow();
     unsigned getCol();
+    bool hasAmulet(void);
+    void takeAmulet(void);
     /*void setRow(unsigned aRow);
     void setCol(unsigned aCol);*/
     void decreaseLife(void);
