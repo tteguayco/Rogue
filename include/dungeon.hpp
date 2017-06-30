@@ -19,6 +19,7 @@ const char HERO_CHAR = '@';
 const char AMULET_CHAR = '&';
 const char MONSTER_CHAR = 'O';
 const char DISABLED_CHAR = ' ';
+const char CONTAMINATED_CHAR = ' ';
 
 /*
  * Between a pair of rooms, there will be ROOM_CELL_MARGIN
@@ -28,7 +29,7 @@ const unsigned ROOM_CELL_MARGIN = 4;
 
 enum Cell {
     Disabled, Enabled, Wall, Door, Corridor, AccessPoint, Amulet, HeroCell,
-    MonsterCell
+    MonsterCell, Contaminated
 };
 
 class Dungeon {
@@ -80,5 +81,7 @@ private:
     void setAccessPoint(void);
     void setAmulet(void);
     void setMonsters(void);
+    void markContaminatedCell(unsigned row, unsigned col);
+    void resetContaminatedCells();
     void buildRoom(Room room);
 };

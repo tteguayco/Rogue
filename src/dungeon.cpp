@@ -124,7 +124,9 @@ void Dungeon::setAccessPoint()
         rooms_[0].getRightLimit() - 1);
 
     hero_ = new Hero(randomRow, randomCol);
-    mapElements_[randomRow][randomCol] = AccessPoint;
+    accessPointRow_ = randomRow;
+    accessPointCol_ = randomCol;
+    mapElements_[accessPointRow_][accessPointCol_] = AccessPoint;
 }
 
 void Dungeon::setAmulet()
@@ -133,7 +135,10 @@ void Dungeon::setAmulet()
         rooms_[2].getBottomLimit() - 1);
     const int randomCol = getRandomBetween(rooms_[2].getLeftLimit() + 1,
         rooms_[2].getRightLimit() - 1);
-    mapElements_[randomRow][randomCol] = Amulet;
+
+    amuletRow_ = randomRow;
+    amuletCol_ = randomCol;
+    mapElements_[amuletRow_][amuletCol_] = Amulet;
 }
 
 void Dungeon::setMonsters()
@@ -175,6 +180,7 @@ void Dungeon::moveMonstersToRandomPosition()
     int newRandomRow;
     int newRandomCol;
 
+    resetContaminatedCells();
     for (unsigned int i = 0; i < monsters_.size(); i++) {
         randomDirectionIndex = getRandomBetween(0, numOfPossibleDirections - 1);
         newRandomRow = monsters_[i].getRow();
@@ -196,7 +202,31 @@ void Dungeon::moveMonstersToRandomPosition()
             monsters_[i].setRow(newRandomRow);
             monsters_[i].setCol(newRandomCol);
             mapElements_[newRandomRow][newRandomCol] = MonsterCell;
+
+            // Mark contaminated cells
+            markContaminatedCell(newRandomRow - 1, newRandomCol);
+            markContaminatedCell(newRandomRow + 1, newRandomCol);
+            markContaminatedCell(newRandomRow, newRandomCol - 1);
+            markContaminatedCell(newRandomRow, newRandomCol + 1);
         }
+    }
+}
+
+void Dungeon::resetContaminatedCells()
+{
+    for (unsigned i = 0; i < numberOfRows_; i++) {
+        for (unsigned j = 0; j < numberOfCols_; j++) {
+            if (mapElements_[i][j] == Contaminated) {
+                mapElements_[i][j] = Enabled;
+            }
+        }
+    }
+}
+
+void Dungeon::markContaminatedCell(unsigned row, unsigned col)
+{
+    if (mapElements_[row][col] == Enabled) {
+        mapElements_[row][col] = Contaminated;
     }
 }
 
@@ -239,33 +269,39 @@ void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
     const int heroCol = hero_->getCol();
 
     // Allowed new position?
-    if (mapElements_[newRow][newCol] == Enabled
-      || mapElements_[newRow][newCol] == Door
-      || mapElements_[newRow][newCol] == Corridor
-      || mapElements_[newRow][newCol] == Amulet
-      || mapElements_[newRow][newCol] == AccessPoint
-      || mapElements_[newRow][newCol] == MonsterCell) {
+    if (mapElements_[newRow][newCol] != Wall
+      && mapElements_[newRow][newCol] != Disabled) {
 
           // Unmark current position of the hero
           mapElements_[heroRow][heroCol] = heroLastCell_;
 
           // Amulet?
-          if (mapElements_[heroRow][heroCol] == Amulet) {
-              mapElements_[heroRow][heroCol] = Enabled;
+          if (mapElements_[newRow][newCol] == Amulet) {
+              mapElements_[newRow][newCol] = Enabled;
               // We got the amulet!
+              std::cout << "got it" << std::endl;
               hero_->takeAmulet();
           }
 
-          // Access point with amulet?
-          else if (mapElements_[heroRow][heroCol] == AccessPoint
+          // Access point with amulet? YOU WON!!!
+          else if (mapElements_[newRow][newCol] == AccessPoint
               && hero_->hasAmulet()) {
               hero_->markAsWinner();
+              return;
           }
 
           // Monster? D:
-          else if (mapElements_[heroRow][heroCol] == MonsterCell) {
+          /*else if (mapElements_[heroRow][heroCol] == MonsterCell
+              || mapElements_[heroRow][heroCol] == Contaminated) {
               hero_->decreaseLife();
-          }
+              //mapElements_[hero_->getRow()][hero_->getCol()] = Enabled;
+              //hero_->setRow(accessPointRow_);
+              //hero_->setCol(accessPointCol_);
+              if (mapElements_[heroRow][heroCol] == MonsterCell) {
+                  return;
+              }
+              //return;
+          }*/
 
           // Move hero
           hero_->setRow(newRow);
@@ -275,9 +311,7 @@ void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
           heroLastCell_ = mapElements_[newRow][newCol];
 
           // Update map state
-          if (mapElements_[newRow][newCol] != MonsterCell) {
-              mapElements_[newRow][newCol] = HeroCell;
-          }
+          mapElements_[newRow][newCol] = HeroCell;
     }
 }
 
@@ -286,15 +320,16 @@ void Dungeon::print()
     for (unsigned i = 0; i < numberOfRows_; i++) {
         for (unsigned j = 0; j < numberOfCols_; j++) {
             switch (mapElements_[i][j]) {
-                case Disabled:    std::cout << DISABLED_CHAR;       break;
-                case Wall:        std::cout << WALL_CHAR;           break;
-                case Door:        std::cout << DOOR_CHAR;           break;
-                case Corridor:    std::cout << CORRIDOR_CHAR;       break;
-                case AccessPoint: std::cout << ACCESS_POINT_CHAR;   break;
-                case HeroCell:    std::cout << HERO_CHAR;           break;
-                case Amulet:      std::cout << AMULET_CHAR;         break;
-                case MonsterCell: std::cout << MONSTER_CHAR;        break;
-                case Enabled:     std::cout << DISABLED_CHAR;       break;
+                case Disabled:      std::cout << DISABLED_CHAR;       break;
+                case Wall:          std::cout << WALL_CHAR;           break;
+                case Door:          std::cout << DOOR_CHAR;           break;
+                case Corridor:      std::cout << CORRIDOR_CHAR;       break;
+                case AccessPoint:   std::cout << ACCESS_POINT_CHAR;   break;
+                case HeroCell:      std::cout << HERO_CHAR;           break;
+                case Amulet:        std::cout << AMULET_CHAR;         break;
+                case MonsterCell:   std::cout << MONSTER_CHAR;        break;
+                case Enabled:       std::cout << DISABLED_CHAR;       break;
+                case Contaminated:  std::cout << CONTAMINATED_CHAR;   break;
             }
         }
         std::cout << std::endl;

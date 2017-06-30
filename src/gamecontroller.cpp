@@ -53,34 +53,32 @@ void GameController::runGame()
 
     dungeon_->generateMapRandomly();
     while (true) {
-
         std::system("clear");
         dungeon_->print();
-
-        if (dungeon_->getHero()->isDead()) {
-            std::cout << "You have been eaten by a monster! Try again..."
-                << std::endl;
-            break;
-        }
-        else if (dungeon_->getHero()->hasWon()) {
-            std::cout << "\nWell done! You have won." << std::endl;
-            break;
-        }
-        else if (dungeon_->getHero()->hasAmulet()) {
-            std::cout << "\nYou got the amulet! Return to the access point (X)"
-                << std::endl;
-        }
 
         std::cout << "Lives: " << dungeon_->getHero()->getNumberOfLives()
             << std::endl;
 
+        if (dungeon_->getHero()->isDead()) {
+            std::cout << EATEN_BY_MONSTER_MESSAGE << std::endl;
+            break;
+        }
+        else if (dungeon_->getHero()->hasWon()) {
+            std::cout << VICTORY_MESSAGE << std::endl;
+            break;
+        }
+        else if (dungeon_->getHero()->hasAmulet()) {
+            std::cout << AMULET_GOTTEN_MESSAGE << std::endl;
+        }
+
         keyPressed = getch();
         switch (keyPressed) {
-            case 'i': moveHeroUp();       break;
-            case 'j': moveHeroToLeft();   break;
-            case 'k': moveHeroDown();     break;
-            case 'l': moveHeroToRight();  break;
+            case MOVE_UP_KEY:     moveHeroUp();       break;
+            case MOVE_LEFT_KEY:   moveHeroToLeft();   break;
+            case MOVE_DOWN_KEY:   moveHeroDown();     break;
+            case MOVE_RIGHT_KEY:  moveHeroToRight();  break;
         }
-        dungeon_->moveMonstersToRandomPosition();
+
+        //dungeon_->moveMonstersToRandomPosition();
     }
 }
