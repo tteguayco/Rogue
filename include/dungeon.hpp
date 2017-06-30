@@ -70,7 +70,7 @@ public:
     void generateMapRandomly(void);
     void print(void);
     void readFromFile(char* fileName);
-    void moveHeroToCell(unsigned newRow, unsigned newCol);
+    bool moveHeroToCell(unsigned newRow, unsigned newCol);
     Hero* getHero(void);
     void moveMonstersToRandomPosition(void);
 
@@ -82,6 +82,7 @@ private:
     void setAmulet(void);
     void setMonsters(void);
     void markContaminatedCell(unsigned row, unsigned col);
-    void resetContaminatedCells();
+    void resetContaminatedCells(void);
+    void markAdjacentCellsAsContaminated(unsigned aRow, unsigned aCol);
     void buildRoom(Room room);
 };

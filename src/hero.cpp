@@ -36,6 +36,11 @@ void Hero::takeAmulet()
     hasAmulet_ = true;
 }
 
+void Hero::dropAmulet()
+{
+    hasAmulet_ = false;
+}
+
 void Hero::setRow(unsigned newRow)
 {
     currentRow_ = newRow;

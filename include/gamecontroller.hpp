@@ -10,6 +10,7 @@ const char MOVE_DOWN_KEY = 'k';
 const char MOVE_LEFT_KEY = 'j';
 const char MOVE_RIGHT_KEY = 'l';
 
+const std::string GAME_TITLE = "ROGUELIKE";
 const std::string VICTORY_MESSAGE = "Well done! You have won.";
 const std::string EATEN_BY_MONSTER_MESSAGE
     = "You have been eaten by a monster! Try again...";
@@ -26,8 +27,8 @@ public:
     void runGame(void);
 
 private:
-    void moveHeroUp(void);
-    void moveHeroDown(void);
-    void moveHeroToLeft(void);
-    void moveHeroToRight(void);
+    bool moveHeroUp(void);
+    bool moveHeroDown(void);
+    bool moveHeroToLeft(void);
+    bool moveHeroToRight(void);
 };

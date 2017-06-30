@@ -2,10 +2,16 @@
 
 #include <iostream>
 
+const unsigned DEFAULT_NROWS = 20;
+const unsigned DEFAULT_NCOLS = 30;
+
+const unsigned MIN_NROWS = 20;
+const unsigned MIN_NCOLS = 20;
+
 int main(void)
 {
     srand(time(NULL));
-    Dungeon dungeon(20, 30);
+    Dungeon dungeon(DEFAULT_NROWS, DEFAULT_NCOLS);
     GameController gameController(&dungeon);
 
     // Let's start!

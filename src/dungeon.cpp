@@ -163,11 +163,43 @@ void Dungeon::setMonsters()
                     monsters_.push_back(newMonster);
                     mapElements_[monsterRandomRow][monsterRandomCol] = MonsterCell;
                     cellAvailable = true;
+
+                    markAdjacentCellsAsContaminated(monsterRandomRow, monsterRandomCol);
                 }
             }
             cellAvailable = false;
         }
     }
+}
+
+void Dungeon::resetContaminatedCells()
+{
+    for (unsigned i = 0; i < numberOfRows_; i++) {
+        for (unsigned j = 0; j < numberOfCols_; j++) {
+            if (mapElements_[i][j] == Contaminated) {
+                mapElements_[i][j] = Enabled;
+            }
+        }
+    }
+}
+
+void Dungeon::markContaminatedCell(unsigned row, unsigned col)
+{
+    if (mapElements_[row][col] == Enabled) {
+        mapElements_[row][col] = Contaminated;
+    }
+}
+
+void Dungeon::markAdjacentCellsAsContaminated(unsigned aRow, unsigned aCol)
+{
+    markContaminatedCell(aRow - 1, aCol);
+    markContaminatedCell(aRow + 1, aCol);
+    markContaminatedCell(aRow, aCol - 1);
+    markContaminatedCell(aRow, aCol + 1);
+    markContaminatedCell(aRow + 1, aCol + 1);
+    markContaminatedCell(aRow - 1, aCol + 1);
+    markContaminatedCell(aRow + 1, aCol - 1);
+    markContaminatedCell(aRow - 1, aCol - 1);
 }
 
 void Dungeon::moveMonstersToRandomPosition()
@@ -202,31 +234,10 @@ void Dungeon::moveMonstersToRandomPosition()
             monsters_[i].setRow(newRandomRow);
             monsters_[i].setCol(newRandomCol);
             mapElements_[newRandomRow][newRandomCol] = MonsterCell;
-
-            // Mark contaminated cells
-            markContaminatedCell(newRandomRow - 1, newRandomCol);
-            markContaminatedCell(newRandomRow + 1, newRandomCol);
-            markContaminatedCell(newRandomRow, newRandomCol - 1);
-            markContaminatedCell(newRandomRow, newRandomCol + 1);
         }
-    }
-}
 
-void Dungeon::resetContaminatedCells()
-{
-    for (unsigned i = 0; i < numberOfRows_; i++) {
-        for (unsigned j = 0; j < numberOfCols_; j++) {
-            if (mapElements_[i][j] == Contaminated) {
-                mapElements_[i][j] = Enabled;
-            }
-        }
-    }
-}
-
-void Dungeon::markContaminatedCell(unsigned row, unsigned col)
-{
-    if (mapElements_[row][col] == Enabled) {
-        mapElements_[row][col] = Contaminated;
+        markAdjacentCellsAsContaminated(monsters_[i].getRow(),
+            monsters_[i].getCol());
     }
 }
 
@@ -262,7 +273,7 @@ Hero* Dungeon::getHero()
     return hero_;
 }
 
-void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
+bool Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
 {
     // Get current position of the hero
     const int heroRow = hero_->getRow();
@@ -270,53 +281,61 @@ void Dungeon::moveHeroToCell(unsigned newRow, unsigned newCol)
 
     // Allowed new position?
     if (mapElements_[newRow][newCol] != Wall
-      && mapElements_[newRow][newCol] != Disabled) {
+        && mapElements_[newRow][newCol] != Disabled) {
 
-          // Unmark current position of the hero
-          mapElements_[heroRow][heroCol] = heroLastCell_;
+        // Unmark current position of the hero
+        mapElements_[heroRow][heroCol] = heroLastCell_;
 
-          // Amulet?
-          if (mapElements_[newRow][newCol] == Amulet) {
-              mapElements_[newRow][newCol] = Enabled;
-              // We got the amulet!
-              std::cout << "got it" << std::endl;
-              hero_->takeAmulet();
-          }
+        // Amulet?
+        if (mapElements_[newRow][newCol] == Amulet) {
+            mapElements_[newRow][newCol] = Enabled;
+            // We got the amulet!
+            hero_->takeAmulet();
+        }
 
-          // Access point with amulet? YOU WON!!!
-          else if (mapElements_[newRow][newCol] == AccessPoint
-              && hero_->hasAmulet()) {
-              hero_->markAsWinner();
-              return;
-          }
+        // Access point with amulet? YOU WON!!!
+        else if (mapElements_[newRow][newCol] == AccessPoint
+            && hero_->hasAmulet()) {
+            hero_->markAsWinner();
+            return false;
+        }
 
-          // Monster? D:
-          /*else if (mapElements_[heroRow][heroCol] == MonsterCell
-              || mapElements_[heroRow][heroCol] == Contaminated) {
-              hero_->decreaseLife();
-              //mapElements_[hero_->getRow()][hero_->getCol()] = Enabled;
-              //hero_->setRow(accessPointRow_);
-              //hero_->setCol(accessPointCol_);
-              if (mapElements_[heroRow][heroCol] == MonsterCell) {
-                  return;
-              }
-              //return;
-          }*/
+        // Monster? D:
+        else if (mapElements_[newRow][newCol] == MonsterCell
+            || mapElements_[newRow][newCol] == Contaminated) {
+            hero_->decreaseLife();
+            hero_->dropAmulet();
+            mapElements_[hero_->getRow()][hero_->getCol()] = Enabled;
 
-          // Move hero
-          hero_->setRow(newRow);
-          hero_->setCol(newCol);
+            // Come back to the access point
+            hero_->setRow(accessPointRow_);
+            hero_->setCol(accessPointCol_);
+            return false;
+        }
 
-          // Store last cell state
-          heroLastCell_ = mapElements_[newRow][newCol];
+        // Move hero
+        hero_->setRow(newRow);
+        hero_->setCol(newCol);
 
-          // Update map state
-          mapElements_[newRow][newCol] = HeroCell;
+        // Store last cell state
+        heroLastCell_ = mapElements_[newRow][newCol];
+
+        // Update map state
+        mapElements_[newRow][newCol] = HeroCell;
+
+        // There was movement
+        return true;
     }
+
+    return false;
 }
 
 void Dungeon::print()
 {
+    mapElements_[accessPointRow_][accessPointCol_] = AccessPoint;
+    if (!hero_->hasAmulet()) {
+        mapElements_[amuletRow_][amuletCol_] = Amulet;
+    }
     for (unsigned i = 0; i < numberOfRows_; i++) {
         for (unsigned j = 0; j < numberOfCols_; j++) {
             switch (mapElements_[i][j]) {

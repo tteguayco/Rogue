@@ -23,37 +23,39 @@ GameController::~GameController()
     dungeon_ = NULL;
 }
 
-void GameController::moveHeroUp()
+bool GameController::moveHeroUp()
 {
-    dungeon_->moveHeroToCell(dungeon_->getHero()->getRow() - 1,
+    return dungeon_->moveHeroToCell(dungeon_->getHero()->getRow() - 1,
         dungeon_->getHero()->getCol());
 }
 
-void GameController::moveHeroDown()
+bool GameController::moveHeroDown()
 {
-    dungeon_->moveHeroToCell(dungeon_->getHero()->getRow() + 1,
+    return dungeon_->moveHeroToCell(dungeon_->getHero()->getRow() + 1,
         dungeon_->getHero()->getCol());
 }
 
-void GameController::moveHeroToLeft()
+bool GameController::moveHeroToLeft()
 {
-    dungeon_->moveHeroToCell(dungeon_->getHero()->getRow(),
+    return dungeon_->moveHeroToCell(dungeon_->getHero()->getRow(),
         dungeon_->getHero()->getCol() - 1);
 }
 
-void GameController::moveHeroToRight()
+bool GameController::moveHeroToRight()
 {
-    dungeon_->moveHeroToCell(dungeon_->getHero()->getRow(),
+    return dungeon_->moveHeroToCell(dungeon_->getHero()->getRow(),
         dungeon_->getHero()->getCol() + 1);
 }
 
 void GameController::runGame()
 {
     char keyPressed;
+    bool heroMoves;
 
     dungeon_->generateMapRandomly();
     while (true) {
         std::system("clear");
+        std::cout << GAME_TITLE << std::endl << std::endl;
         dungeon_->print();
 
         std::cout << "Lives: " << dungeon_->getHero()->getNumberOfLives()
@@ -73,12 +75,15 @@ void GameController::runGame()
 
         keyPressed = getch();
         switch (keyPressed) {
-            case MOVE_UP_KEY:     moveHeroUp();       break;
-            case MOVE_LEFT_KEY:   moveHeroToLeft();   break;
-            case MOVE_DOWN_KEY:   moveHeroDown();     break;
-            case MOVE_RIGHT_KEY:  moveHeroToRight();  break;
+            case MOVE_UP_KEY:     heroMoves = moveHeroUp();       break;
+            case MOVE_LEFT_KEY:   heroMoves = moveHeroToLeft();   break;
+            case MOVE_DOWN_KEY:   heroMoves = moveHeroDown();     break;
+            case MOVE_RIGHT_KEY:  heroMoves = moveHeroToRight();  break;
+            default:              heroMoves = false;
         }
 
-        //dungeon_->moveMonstersToRandomPosition();
+        if (heroMoves) {
+            dungeon_->moveMonstersToRandomPosition();
+        }
     }
 }

@@ -19,6 +19,7 @@ public:
     bool hasWon(void);
     void markAsWinner(void);
     void takeAmulet(void);
+    void dropAmulet(void);
     void setRow(unsigned aRow);
     void setCol(unsigned aCol);
     void decreaseLife(void);
