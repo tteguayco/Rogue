@@ -8,8 +8,7 @@ This game has been developed using the C++ object-oriented programming language 
 
 ![Image Rogue](https://raw.githubusercontent.com/tteguayco/Rogue/master/prototype/start.png)
 
-Description
-===========
+## Description
 
 Initially, the player is set in one of the three rooms of a dungeon with 5 lives. There are three monsters in each room so, 
 if the player is caught by one of them, will lose a life. Furthermore, all of the rooms are connected together by a corridor, 
@@ -18,8 +17,7 @@ where the monsters cannot access to.
 The goal of the game is to get an amulet which is placed in another room and come back to the access point (the starter position
 for the player).
 
-Notation
-========
+## Notation
 
 The game is shown in plain text from a terminal. Because of it, a specific notation has been adopted in order to display the different
 elements which are presented in the environment:
@@ -32,8 +30,7 @@ elements which are presented in the environment:
 * __&__: amulet
 * __O__: monster
 
-Building
-========
+## Building
 
 From a shell, build an binary file to be placed in the bin/ directory using the Make tool:
 ```sh
