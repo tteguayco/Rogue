@@ -1,7 +1,6 @@
 # C++ Game - Roguelike
 
-Introduction
-============
+## Introduction
 
 This game has been developed using the C++ object-oriented programming language as a part of a practical work for the
 'Computability and Algorithms' subject.
