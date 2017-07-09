@@ -6,7 +6,7 @@ Introduction
 This game has been developed using the C++ object-oriented programming language as a part of a practical work for the
 'Computability and Algorithms' subject.
 
-![Image Rogue](https://github.com/tteguayco/Rogue/blob/master/prototype/Captura%20de%20pantalla%20de%202017-07-09%2017-33-27.png?raw=true)
+![Image Rogue](https://raw.githubusercontent.com/tteguayco/Rogue/master/prototype/start.png)
 
 Description
 ===========
@@ -37,10 +37,10 @@ Building
 
 From a shell, build an binary file to be placed in the bin/ directory using the Make tool:
 ```sh
-make
+$ make
 ```
 
 To run the generated binary file, just run the following:
 ```sh
-./bin/rogue
+$ ./bin/rogue
 ```
