@@ -1,4 +1,4 @@
-# Rogue
+# C++ Game - Roguelike
 
 Introduction
 ============
